@@ -6,27 +6,38 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon --watch src --ext ts --exec \"npm run build && npm start\""
+    "dev": "nodemon --watch src --ext ts --exec \"npm run build && npm start\"",
+    "test": "TS_NODE_TRANSPILE_ONLY=true node --experimental-loader ts-node/esm --no-warnings --loader ts-node/esm --enable-source-maps ./node_modules/mocha/bin/mocha 'test/**/*.ts'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.826.0",
     "@aws-sdk/lib-dynamodb": "^3.826.0",
+    "aws-sdk-client-mock": "^4.1.0",
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.4",
+    "@types/chai": "^5.2.2",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.3",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^24.0.0",
+    "@types/sinon": "^17.0.4",
+    "@types/supertest": "^6.0.3",
     "@types/uuid": "^10.0.0",
+    "chai": "^5.2.0",
+    "mocha": "^11.6.0",
     "nodemon": "^3.1.10",
+    "sinon": "^20.0.0",
+    "supertest": "^7.1.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3"
   }
 }

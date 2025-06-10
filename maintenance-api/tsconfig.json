@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",    
-    "module": "commonjs",
+    "module": "nodenext",
     "lib": ["es2022", "dom"], 
     "strict": true,
     "esModuleInterop": true,
@@ -9,8 +9,9 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "moduleResolution": "node"
+    "moduleResolution": "nodenext"
   },
+  "types": ["node", "mocha"],
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

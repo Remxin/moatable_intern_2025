@@ -11,12 +11,17 @@ const app = express();
 app.use(express.json());
 
 const AWS_REGION = process.env.AWS_REGION || "us-east-1"
-const DYNAMODB_TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || "MaintenanceRequests";
+const DYNAMODB_TABLE_NAME = process.env.DYNAMODB_TABLE_NAME;
 const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL;
 const PORT = process.env.PORT || 3000;
 
 if (!ANALYSIS_SERVICE_URL) {
   console.error("Error: ANALYSIS_SERVICE_URL environment variable is not set. Please ensure .env file is correct.");
+  process.exit(1);
+}
+
+if (!DYNAMODB_TABLE_NAME) {
+  console.error("Error: DYNAMODB_TABLE_NAME environment variable is not set. Please ensure .env file is correct or is set in test environment.");
   process.exit(1);
 }
 
@@ -39,7 +44,7 @@ interface MaintenanceRequest {
   analyzedFactors: AnalysisResult;
 }
 
-app.post("/requests", async (req: Request, res: Response): Promise<void> => { // Dodano jawny typ zwracany Promise<void>
+app.post("/requests", async (req: Request, res: Response): Promise<void> => {
   const { tenantId, message } = req.body;
 
   if (typeof tenantId !== "string" || !tenantId.trim()) {
@@ -78,7 +83,7 @@ app.post("/requests", async (req: Request, res: Response): Promise<void> => { //
       resolved: false,
       analyzedFactors: analysisResult,
     };
-        console.log(newRequest)
+  
 
     const putCommand = new PutCommand({
       TableName: DYNAMODB_TABLE_NAME,
@@ -86,7 +91,6 @@ app.post("/requests", async (req: Request, res: Response): Promise<void> => { //
     });
     await dbDocClient.send(putCommand);
 
-    console.log(`Request ${newRequestId} saved with priority: ${finalPriority}.`);
 
     res.status(201).json({
       requestId: newRequest.id,
@@ -143,9 +147,13 @@ app.get("/requests", async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Local API service running on port ${PORT}`);
-  console.log(ANALYSIS_SERVICE_URL)
-  console.log(`POST /requests endpoint available at: http://localhost:${PORT}/requests`);
-  console.log(`GET /requests endpoint available at: http://localhost:${PORT}/requests?priority=high (or without parameter)`);
-});
+export default app; 
+
+if (import.meta.url === new URL(process.argv[1], import.meta.url).href) {
+    app.listen(PORT, () => {
+        console.log(`Local API service running on port ${PORT}`);
+        console.log(ANALYSIS_SERVICE_URL)
+        console.log(`POST /requests endpoint available at: http://localhost:${PORT}/requests`);
+        console.log(`GET /requests endpoint available at: http://localhost:${PORT}/requests?priority=high (or without parameter)`);
+    });
+}
